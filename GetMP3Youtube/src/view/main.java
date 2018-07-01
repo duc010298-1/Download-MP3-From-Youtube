@@ -5,6 +5,7 @@
  */
 package view;
 
+import java.awt.Toolkit;
 import java.util.LinkedList;
 import java.util.Queue;
 import utils.MyUtils;
@@ -23,13 +24,17 @@ public class main extends javax.swing.JFrame {
     /**
      * Creates new form main
      */
-    // TODO: choose start and end to convert
     // TODO: add icon
     
     public main() {
         initComponents();
         setLocationRelativeTo(null);
+        setIcon();
         initThread();
+    }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("youtubeMP3.png")));
     }
 
     private void initThread() {
