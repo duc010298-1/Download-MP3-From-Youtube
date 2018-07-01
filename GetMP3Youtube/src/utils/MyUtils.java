@@ -5,9 +5,7 @@
  */
 package utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  *
@@ -15,18 +13,18 @@ import java.io.InputStreamReader;
  */
 public class MyUtils {
 
-    public String getCurrentWorkingDir() {
-        return System.getProperty("user.dir");
-    }
-
-    public void downloadMP3(String strURL) {
+    public void downloadMP3(String strURL, String folderSave) {
         String command = "";
         command += getCurrentWorkingDir()
-                + "\\youtubeDL\\youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --add-metadata "
+                + "\\youtubeDL\\youtube-dl --extract-audio --audio-format mp3 --audio-quality 320k --add-metadata "
                 + "--metadata-from-title " + '"' + "%(artist)s - %(title)s" + '"' + " "
-                + "--output " + '"' + "%USERPROFILE%\\Downloads\\%(title)s.%(ext)s" + '"' + " "
+                + "--output " + '"' + folderSave +"%(title)s.%(ext)s" + '"' + " "
                 + '"' + strURL + '"';
         executeCommand(command);
+    }
+
+    private String getCurrentWorkingDir() {
+        return System.getProperty("user.dir");
     }
 
     private void executeCommand(String command) {
