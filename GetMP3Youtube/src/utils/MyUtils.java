@@ -15,7 +15,7 @@ import view.main;
  * @author Đỗ Trung Đức
  */
 public class MyUtils {
-    
+
     private main mainFrame = null;
 
     public void downloadMP3(String strURL, String folderSave, javax.swing.JFrame frame) {
@@ -34,12 +34,24 @@ public class MyUtils {
     }
 
     private void executeCommand(String command) {
+        String temp = null;
+        boolean isFirst = true;
         try {
             ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", command);
             Process p = builder.start();
             BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
             while ((line = r.readLine()) != null) {
+                if(line.contains("[download]")) {
+                    if(isFirst) {
+                        mainFrame.writeToConsole(line);
+                        temp = mainFrame.getConsoleContent() + "\n";
+                        isFirst = false;
+                        continue;
+                    }
+                    mainFrame.rewriteConsole(temp + line);
+                    continue;
+                }
                 mainFrame.writeToConsole(line);
             }
         } catch (IOException ex) {

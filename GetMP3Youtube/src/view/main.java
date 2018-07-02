@@ -8,6 +8,10 @@ package view;
 import java.awt.Toolkit;
 import java.util.LinkedList;
 import java.util.Queue;
+import javax.swing.Action;
+import javax.swing.JPopupMenu;
+import javax.swing.text.DefaultCaret;
+import javax.swing.text.DefaultEditorKit;
 import utils.MyUtils;
 
 /**
@@ -25,16 +29,32 @@ public class main extends javax.swing.JFrame {
     /**
      * Creates new form main
      */
-    
     public main() {
         initComponents();
         setLocationRelativeTo(null);
         setIcon();
+        initContextMenu();
+        initAutoScroll();
         initThread();
     }
-    
+
     private void setIcon() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("youtubeMP3.png")));
+    }
+
+    private void initContextMenu() {
+        JPopupMenu menu = new JPopupMenu();
+
+        Action paste = new DefaultEditorKit.PasteAction();
+        paste.putValue(Action.NAME, "Paste");
+        menu.add(paste);
+
+        txtURL.setComponentPopupMenu(menu);
+    }
+
+    private void initAutoScroll() {
+        DefaultCaret caret = (DefaultCaret) txtConsole.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
 
     private void initThread() {
@@ -52,9 +72,9 @@ public class main extends javax.swing.JFrame {
                         }
                     }
                     String tempURL = listURL.poll();
-                    writeToConsole("\n\nDownloading " + tempURL);
+                    writeToConsole("Downloading " + tempURL);
                     myUtils.downloadMP3(tempURL, folderSave, mainFrame);
-                    writeToConsole("Download " + tempURL + " completed");
+                    writeToConsole("Download " + tempURL + " completed\n");
                 }
             }
         };
@@ -65,10 +85,18 @@ public class main extends javax.swing.JFrame {
         txtConsole.setText(temp + '\n' + str);
     }
     
-    private void setStatus(String str) {
-        txtStatus.setText("Status: " + str);
+    public void rewriteConsole(String str) {
+        txtConsole.setText(str);
     }
     
+    public String getConsoleContent() {
+        return txtConsole.getText();
+    }
+
+    private void setStatus(String str) {
+        txtStatus.setText(str);
+    }
+
     public void setFolderSave(String str) {
         str += "\\";
         folderSave = str;
@@ -96,12 +124,14 @@ public class main extends javax.swing.JFrame {
         txtSave = new javax.swing.JTextField();
         btnChooseLocation = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
-        jButton1 = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         txtStatus = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
+        txtStatus1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Download MP3 from Youtube");
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 51, 153));
@@ -123,7 +153,7 @@ public class main extends javax.swing.JFrame {
         txtConsole.setForeground(new java.awt.Color(255, 255, 255));
         txtConsole.setLineWrap(true);
         txtConsole.setRows(5);
-        txtConsole.setText("Download MP3 from youtube\nAuthor: Do Trung Duc\n===================================================");
+        txtConsole.setText("Download MP3 from youtube\nAuthor: Do Trung Duc\n=============================================================");
         txtConsole.setWrapStyleWord(true);
         jScrollPane1.setViewportView(txtConsole);
 
@@ -139,14 +169,17 @@ public class main extends javax.swing.JFrame {
                 }
             });
 
-            jButton1.setText("Cancel");
-            jButton1.addActionListener(new java.awt.event.ActionListener() {
+            btnCancel.setText("Cancel");
+            btnCancel.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jButton1ActionPerformed(evt);
+                    btnCancelActionPerformed(evt);
                 }
             });
 
-            txtStatus.setText("Status:");
+            txtStatus.setText("unknown");
+
+            txtStatus1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+            txtStatus1.setText("Status:");
 
             javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
             getContentPane().setLayout(layout);
@@ -166,15 +199,18 @@ public class main extends javax.swing.JFrame {
                             .addComponent(btnChooseLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                             .addGap(0, 0, Short.MAX_VALUE)
-                            .addComponent(btnDownload, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnDownload, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel1)
                                 .addComponent(jLabel2)
                                 .addComponent(jLabel5)
-                                .addComponent(txtStatus))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(txtStatus1)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(txtStatus)))
                             .addGap(0, 208, Short.MAX_VALUE)))
                     .addContainerGap())
                 .addComponent(jSeparator4)
@@ -201,13 +237,15 @@ public class main extends javax.swing.JFrame {
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(txtStatus)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtStatus)
+                        .addComponent(txtStatus1))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnDownload)
-                        .addComponent(jButton1))
+                        .addComponent(btnCancel))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap())
@@ -218,8 +256,7 @@ public class main extends javax.swing.JFrame {
 
     private void btnDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadActionPerformed
         String tempStr = txtURL.getText().substring(0, 43);
-        System.out.println(tempStr);
-        if(tempStr.equals("")) {
+        if (tempStr.equals("")) {
             setStatus("URL can not be empty");
             return;
         }
@@ -227,7 +264,7 @@ public class main extends javax.swing.JFrame {
             setStatus("Incorrect URL");
             return;
         }
-        setStatus("Add " + tempStr + " to queue");
+        setStatus("Add " + '"' + tempStr + '"' + " to queue");
         listURL.add(tempStr);
         if (!t.isAlive()) {
             t.start();
@@ -243,9 +280,9 @@ public class main extends javax.swing.JFrame {
         fileChooser.setVisible(true);
     }//GEN-LAST:event_btnChooseLocationActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -283,9 +320,9 @@ public class main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnChooseLocation;
     private javax.swing.JButton btnDownload;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
@@ -297,6 +334,7 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JTextArea txtConsole;
     private javax.swing.JTextField txtSave;
     private javax.swing.JLabel txtStatus;
+    private javax.swing.JLabel txtStatus1;
     private javax.swing.JTextField txtURL;
     // End of variables declaration//GEN-END:variables
 }

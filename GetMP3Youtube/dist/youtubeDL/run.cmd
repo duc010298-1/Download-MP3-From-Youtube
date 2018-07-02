@@ -1,2 +1,0 @@
-youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 --add-metadata --metadata-from-title "%%(artist)s - %%(title)s" --output "%USERPROFILE%\Desktop\%%(title)s.%%(ext)s" "https://www.youtube.com/watch?v=DbMXo_Qp0s4"
-pause
