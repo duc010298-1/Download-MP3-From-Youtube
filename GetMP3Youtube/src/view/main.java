@@ -24,7 +24,6 @@ public class main extends javax.swing.JFrame {
     /**
      * Creates new form main
      */
-    // TODO: add icon
     
     public main() {
         initComponents();
@@ -103,7 +102,7 @@ public class main extends javax.swing.JFrame {
 
         jLabel2.setText("URL Youtube:");
 
-        btnDownload.setText("Download");
+        btnDownload.setText("Add to queue");
         btnDownload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDownloadActionPerformed(evt);
@@ -164,9 +163,9 @@ public class main extends javax.swing.JFrame {
                             .addGap(0, 208, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                             .addGap(0, 0, Short.MAX_VALUE)
-                            .addComponent(btnDownload, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnDownload, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addContainerGap())
             );
             layout.setVerticalGroup(
@@ -202,7 +201,8 @@ public class main extends javax.swing.JFrame {
         }// </editor-fold>//GEN-END:initComponents
 
     private void btnDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadActionPerformed
-        String tempStr = txtURL.getText();
+        String tempStr = txtURL.getText().substring(0, 43);
+        System.out.println(tempStr);
         if(tempStr.equals("")) {
             writeToConsole("URL can not be empty");
             return;
@@ -219,6 +219,7 @@ public class main extends javax.swing.JFrame {
         synchronized (t) {
             t.notify();
         }
+        txtURL.setText("");
     }//GEN-LAST:event_btnDownloadActionPerformed
 
     private void btnChooseLocationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseLocationActionPerformed
