@@ -20,6 +20,7 @@ public class main extends javax.swing.JFrame {
     private final Queue<String> listURL = new LinkedList<>();
     private Thread t;
     private String folderSave = "%USERPROFILE%\\Downloads\\";
+    private final javax.swing.JFrame mainFrame = this;
 
     /**
      * Creates new form main
@@ -42,7 +43,7 @@ public class main extends javax.swing.JFrame {
             public void run() {
                 while (true) {
                     if (listURL.isEmpty()) {
-                        writeToConsole("Empty queue, wait until new add");
+                        setStatus("Empty queue, wait until new add");
                         try {
                             synchronized (this) {
                                 wait();
@@ -51,17 +52,21 @@ public class main extends javax.swing.JFrame {
                         }
                     }
                     String tempURL = listURL.poll();
-                    writeToConsole("Downloading " + tempURL);
-                    myUtils.downloadMP3(tempURL, folderSave);
+                    writeToConsole("\n\nDownloading " + tempURL);
+                    myUtils.downloadMP3(tempURL, folderSave, mainFrame);
                     writeToConsole("Download " + tempURL + " completed");
                 }
             }
         };
     }
 
-    private void writeToConsole(String str) {
+    public void writeToConsole(String str) {
         String temp = txtConsole.getText();
         txtConsole.setText(temp + '\n' + str);
+    }
+    
+    private void setStatus(String str) {
+        txtStatus.setText("Status: " + str);
     }
     
     public void setFolderSave(String str) {
@@ -92,6 +97,8 @@ public class main extends javax.swing.JFrame {
         btnChooseLocation = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         jButton1 = new javax.swing.JButton();
+        txtStatus = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Download MP3 from Youtube");
@@ -139,6 +146,8 @@ public class main extends javax.swing.JFrame {
                 }
             });
 
+            txtStatus.setText("Status:");
+
             javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
             getContentPane().setLayout(layout);
             layout.setHorizontalGroup(
@@ -155,18 +164,20 @@ public class main extends javax.swing.JFrame {
                             .addComponent(txtSave)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(btnChooseLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel1)
-                                .addComponent(jLabel2)
-                                .addComponent(jLabel5))
-                            .addGap(0, 208, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                             .addGap(0, 0, Short.MAX_VALUE)
                             .addComponent(btnDownload, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel1)
+                                .addComponent(jLabel2)
+                                .addComponent(jLabel5)
+                                .addComponent(txtStatus))
+                            .addGap(0, 208, Short.MAX_VALUE)))
                     .addContainerGap())
+                .addComponent(jSeparator4)
             );
             layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -190,11 +201,16 @@ public class main extends javax.swing.JFrame {
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(txtStatus)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnDownload)
                         .addComponent(jButton1))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
             );
 
             pack();
@@ -204,14 +220,14 @@ public class main extends javax.swing.JFrame {
         String tempStr = txtURL.getText().substring(0, 43);
         System.out.println(tempStr);
         if(tempStr.equals("")) {
-            writeToConsole("URL can not be empty");
+            setStatus("URL can not be empty");
             return;
         }
         if (!myUtils.validateURL(tempStr)) {
-            writeToConsole("Incorrect URL");
+            setStatus("Incorrect URL");
             return;
         }
-        writeToConsole("Add " + tempStr + " to queue");
+        setStatus("Add " + tempStr + " to queue");
         listURL.add(tempStr);
         if (!t.isAlive()) {
             t.start();
@@ -277,8 +293,10 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTextArea txtConsole;
     private javax.swing.JTextField txtSave;
+    private javax.swing.JLabel txtStatus;
     private javax.swing.JTextField txtURL;
     // End of variables declaration//GEN-END:variables
 }

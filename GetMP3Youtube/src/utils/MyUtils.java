@@ -5,20 +5,26 @@
  */
 package utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import view.main;
 
 /**
  *
  * @author Đỗ Trung Đức
  */
 public class MyUtils {
+    
+    private main mainFrame = null;
 
-    public void downloadMP3(String strURL, String folderSave) {
+    public void downloadMP3(String strURL, String folderSave, javax.swing.JFrame frame) {
+        mainFrame = (main) frame;
         String command = "";
         command += getCurrentWorkingDir()
                 + "\\youtubeDL\\youtube-dl --extract-audio --audio-format mp3 --audio-quality 320k --add-metadata "
                 + "--metadata-from-title " + '"' + "%(artist)s - %(title)s" + '"' + " "
-                + "--output " + '"' + folderSave +"%(title)s.%(ext)s" + '"' + " "
+                + "--output " + '"' + folderSave + "%(title)s.%(ext)s" + '"' + " "
                 + '"' + strURL + '"';
         executeCommand(command);
     }
@@ -28,11 +34,15 @@ public class MyUtils {
     }
 
     private void executeCommand(String command) {
-        Process p;
         try {
-            p = Runtime.getRuntime().exec(command);
-            p.waitFor();
-        } catch (IOException | InterruptedException e) {
+            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", command);
+            Process p = builder.start();
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = r.readLine()) != null) {
+                mainFrame.writeToConsole(line);
+            }
+        } catch (IOException ex) {
         }
     }
 
