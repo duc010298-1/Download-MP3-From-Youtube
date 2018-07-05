@@ -39,7 +39,7 @@ public class MyUtils {
         try {
             ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", command);
             Process p = builder.start();
-            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream(), "CP1258"));
             String line;
             while ((line = r.readLine()) != null) {
                 if(line.contains("[download]")) {

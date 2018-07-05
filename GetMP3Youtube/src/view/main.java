@@ -256,6 +256,7 @@ public class main extends javax.swing.JFrame {
 
     private void btnDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadActionPerformed
         String tempStr = txtURL.getText().substring(0, 43);
+        txtURL.setText("");
         if (tempStr.equals("")) {
             setStatus("URL can not be empty");
             return;
@@ -271,8 +272,7 @@ public class main extends javax.swing.JFrame {
         }
         synchronized (t) {
             t.notify();
-        }
-        txtURL.setText("");
+        } 
     }//GEN-LAST:event_btnDownloadActionPerformed
 
     private void btnChooseLocationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseLocationActionPerformed
